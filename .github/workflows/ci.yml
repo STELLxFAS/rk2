@@ -2,11 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
     tags:
       - 'v*'
   pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
 
 permissions:
   contents: write
@@ -16,35 +16,46 @@ jobs:
   build:
     runs-on: ubuntu-latest
     
+    strategy:
+      matrix:
+        build-type: [Debug, Release]
+    
     steps:
     - uses: actions/checkout@v4
     
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y cmake g++
     
-    - name: Build
+    - name: Configure CMake (${{ matrix.build-type }})
       run: |
         mkdir build
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release
-        cmake --build .
+        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build-type }}
     
-    - name: Test
+    - name: Build (${{ matrix.build-type }})
+      run: cmake --build build --config ${{ matrix.build-type }}
+    
+    - name: Test (${{ matrix.build-type }})
       run: cd build && ctest --output-on-failure
     
-    - name: Create DEB
-      run: cd build && cpack
+    - name: Create DEB (${{ matrix.build-type }})
+      run: |
+        cd build
+        cpack
+        for deb in *.deb; do
+          mv "$deb" "${deb%.deb}-${{ matrix.build-type }}.deb"
+        done
     
-    - name: Upload artifact
+    - name: Upload artifact (${{ matrix.build-type }})
       uses: actions/upload-artifact@v4
       with:
-        name: package
-        path: build/*.deb
+        name: package-${{ matrix.build-type }}
+        path: build/*-${{ matrix.build-type }}.deb
     
     - name: Create Release
-      if: startsWith(github.ref, 'refs/tags/')
+      if: startsWith(github.ref, 'refs/tags/') && matrix.build-type == 'Release'
       uses: softprops/action-gh-release@v2
       with:
-        files: build/*.deb
+        files: build/*-Release.deb
       env:
         GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
