@@ -6,13 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 enable_testing()
 
-
 add_executable(mediator_app main.cpp)
-
-
 add_executable(test_supply test_supply.cpp)
-target_link_libraries(test_supply PRIVATE mediator_app)
-
 add_test(NAME SupplyTest COMMAND test_supply)
 
 set(CPACK_GENERATOR "DEB")
