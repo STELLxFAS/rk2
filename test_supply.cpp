@@ -1,12 +1,11 @@
 #include <iostream>
 #include <cassert>
-#include <cstdint>
 
 #define main main_disabled 
 
 #include "business.cpp" 
 
-#undef main // 
+#undef main 
 
 int main()
 {
