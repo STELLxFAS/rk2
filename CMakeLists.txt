@@ -11,8 +11,16 @@ include_directories(${CMAKE_SOURCE_DIR})
 add_executable(mediator_app business.cpp)
 target_compile_options(mediator_app PRIVATE "-include" "${CMAKE_SOURCE_DIR}/fix.h")
 
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+)
+FetchContent_MakeAvailable(googletest)
+
 add_executable(test_supply test_supply.cpp)
 target_compile_options(test_supply PRIVATE "-include" "${CMAKE_SOURCE_DIR}/fix.h")
+target_link_libraries(test_supply PRIVATE gtest_main)
 
 add_test(NAME SupplyTest COMMAND test_supply)
 

@@ -1,24 +1,24 @@
-#include <iostream>
-#include <cassert>
+#include <gtest/gtest.h>
+#include <cstdint>
 
-#define main main_disabled 
+#define main main_disabled
+#include "business.cpp"
+#undef main
 
-#include "business.cpp" 
-
-#undef main 
-
-int main()
+TEST(GroceryStoreTest, SupplyReturnsCorrectStock)
 {
-    std::cout << "Test: GroceryStore::Supply()..." << std::endl;
-    
     EstateOwner estateOwner;
     GroceryStore groceryStore;
     Restaurant restaurant;
     BusinessMediator mediator(estateOwner, groceryStore, restaurant);
     
     int result = groceryStore.Supply(5);
-    assert(result == 5);
     
-    std::cout << "✓ Test passed: Supply(5) returned " << result << std::endl;
-    return 0;
+    EXPECT_EQ(result, 5);
+}
+
+int main(int argc, char **argv)
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
