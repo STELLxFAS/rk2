@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 enable_testing()
 
-add_executable(mediator_app main.cpp)
+add_executable(mediator_app business.cpp)
 add_executable(test_supply test_supply.cpp)
 add_test(NAME SupplyTest COMMAND test_supply)
 
